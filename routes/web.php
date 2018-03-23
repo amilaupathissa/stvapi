@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return "Namo Buddhaya!";
+    return "Namo Buddhaya..!";
 });
 
 Route::group(['prefix'=>'latest_videos'],function(){

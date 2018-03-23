@@ -17,9 +17,11 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 // Route::middleware('throttle:5,1')->post('sendmail', 'Message\MessageController@mailSend');
-Route::group(['middleware' => 'throttle:3,1'], function() {
-    Route::post('sendmail', 'Message\MessageController@mailSend');
-});
+// Route::group(['middleware' => 'throttle:3,1'], function() {
+//     Route::post('sendmail', 'Message\MessageController@mailSend');
+// });
+
+Route::post('sendmail', 'Message\MessageController@mailSend');
 
 Route::get('sendmail', function(){
     return 'please use post request instead of get';
