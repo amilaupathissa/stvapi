@@ -22,8 +22,8 @@ class MessageController extends Controller
             $message->to('web.shraddha@gmail.com', 'to backend')
                     ->subject($subject);
             $message->from('mobile.app.shraddha@gmail.com','Message from: '.$name);
-
         });
+        // return "sent email";
     }
     
 }
