@@ -155,7 +155,6 @@ class PostController extends Controller
         $content = str_before($text_after_fusionText, '[/fusion_text');
 
         return $this->returnArray($post, $content);
-        return [$post, $content];
     }
 
 }
