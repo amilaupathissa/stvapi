@@ -63,8 +63,8 @@ class PostController extends Controller
             
         }
         
-        return [$all_videos,$facebook_videos,$youtube_videos,$vimeo_videos];
         // return $all_videos;
+        return [$all_videos,$facebook_videos,$youtube_videos,$vimeo_videos];
 
 
     }
@@ -149,13 +149,15 @@ class PostController extends Controller
     public function singleVideo($id)
     {
         $post = Post::where('ID',$id)->first();
-
+        
+        //get text after 'fusion_text]'
         $text_after_fusionText = str_after($post->post_content, 'fusion_text]');
 
-        $content = str_before($text_after_fusionText, '[/fusion_text');
+        $content = strip_tags(str_before($text_after_fusionText, '[/fusion_text'));
+        //remove front and back new lines and spaces
+        $finlaContent = trim(preg_replace(' / \s\s + / ', ' ', $content));
 
-        return $this->returnArray($post, $content);
+        return $this->returnArray($post, $finlaContent);
     }
 
 }
-        
