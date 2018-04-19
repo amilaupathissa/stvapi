@@ -25,24 +25,11 @@ class PostController extends Controller
         
         foreach ($posts as $post) {
 
-            // Get thumb_id from metadata table
-            $metaData_thumb_id =  MetaData::where('post_id',$post->ID)
-                                        ->where('meta_key','_thumbnail_id')
-                                        ->value('meta_value');
-            // Get pyre_video link from matadata table
-            $video_url =  MetaData::where('post_id',$post->ID)
-                                        ->where('meta_key','pyre_video')
-                                        ->value('meta_value');
-            // Get image name from matadata table
-            $image_url =  MetaData::where('post_id',$metaData_thumb_id)
-                                        ->where('meta_key',"_wp_attached_file")
-                                        ->value('meta_value');
-          
-            // fileter url
-            $one = str_after($video_url,'src=');
-            $two = str_before($one,'frameborder=');
-            $three = str_after($two,'"');
-            $video_url = str_before($three,'"'); // Final video URL
+            // Get pyre_video link 
+            $video_url = $this->metadata($post->ID)->video_url;
+
+            // Get image name 
+            $image_url = $this->metadata($post->ID)->image_url;
 
 
             // Check for sepatate urls
@@ -51,24 +38,24 @@ class PostController extends Controller
                 $if_youtube_video = str_contains($video_url,"www.youtube.com");
                 if($if_youtube_video){
                     $source_type = 'youtube';
-                    $youtube_videos[] = $this->returnArray($post->ID,$post->post_date,$post->post_title,$post->post_name, $image_url, $video_url,$source_type);
+                    $youtube_videos[] = $this->returnArray($post,$source_type);
                     // $youtube_videos = $retrun_array;
                 }
                 $if_facebook_video = str_contains($video_url,"www.facebook.com");
                 if($if_facebook_video){
                     $source_type = 'facebook';
-                    $facebook_videos[] = $this->returnArray($post->ID,$post->post_date,$post->post_title,$post->post_name, $image_url, $video_url,$source_type);
+                    $facebook_videos[] = $this->returnArray($post,$source_type);
                     // $facebook_videos = $retrun_array;
                 }
                 $if_vimeo_video = str_contains($video_url,"vimeo");
                 if($if_vimeo_video){
                     $source_type = 'vimeo';
-                    $vimeo_videos[] = $this->returnArray($post->ID,$post->post_date,$post->post_title,$post->post_name, $image_url, $video_url,$source_type);
+                    $vimeo_videos[] = $this->returnArray($post,$source_type);
                     // $vimeo_videos = $retrun_array;
                 }
     
     
-                $all_videos[] = $this->returnArray($post->ID,$post->post_date,$post->post_title,$post->post_name, $image_url, $video_url,$source_type);
+                $all_videos[] = $this->returnArray($post,$source_type);
     
 
             }
@@ -81,17 +68,53 @@ class PostController extends Controller
 
 
     }
-
-    private function returnArray($psot_id, $post_date, $post_title, $post_name, $image_url, $video_url,$source_type)
+    /**
+     * Get metadata from post id
+     * 
+     * @return requested parameter
+     */
+    private function metadata($postID)
     {
+         // Get thumb_id from metadata table
+        $metaData_thumb_id = MetaData::where('post_id', $postID)
+            ->where('meta_key', '_thumbnail_id')
+            ->value('meta_value');
+        // Get pyre_video link from matadata table
+        $video_url_noneEdit = MetaData::where('post_id', $postID)
+            ->where('meta_key', 'pyre_video')
+            ->value('meta_value');
+        // Get image name from matadata table
+        $image_url = MetaData::where('post_id', $metaData_thumb_id)
+            ->where('meta_key', "_wp_attached_file")
+            ->value('meta_value');
+
+        // fileter url
+        $one = str_after($video_url_noneEdit, 'src=');
+        $two = str_before($one, 'frameborder=');
+        $three = str_after($two, '"');
+        $video_url = str_before($three, '"'); // Final video URL
+
+        return (object)[
+            'image_url'=> $image_url,
+            'video_url'=> $video_url
+        ];
+
+
+
+    }
+
+    private function returnArray($post,$source_type)
+    {
+        $image_url = $this->metadata($post->ID)->image_url;
+        $video_url = $this->metadata($post->ID)->video_url;
          return  array(
-                    'id' => $psot_id,
-                    'post_date' => $post_date,
-                    'post_title' => $post_title,
-                    'post_url' => 'https://www.shraddha.lk/shraddha-programs/'.$post_name,
+                    'id' => $post->ID,
+                    'post_date' => $post->post_date,
+                    'post_title' => $post->post_title,
+                    'post_url' => 'https://www.shraddha.lk/shraddha-programs/'. $post->post_name,
                     'image_url' => 'https://www.shraddha.lk/wp-content/uploads/'.$image_url,
                     'video_url' => $video_url,
-                    'source_type' => $source_type,
+                    'source' => $source_type,
                 );
     }
 
@@ -117,6 +140,22 @@ class PostController extends Controller
     {
         $out=array_slice($this->base()[3], 0, $count);
         return response()->json($out);
+    }
+    /**
+     * Get details of single post
+     * 
+     * @return single post details
+     */
+    public function singleVideo($id)
+    {
+        $post = Post::where('ID',$id)->first();
+
+        $text_after_fusionText = str_after($post->post_content, 'fusion_text]');
+
+        $content = str_before($text_after_fusionText, '[/fusion_text');
+
+        return $this->returnArray($post, $content);
+        return [$post, $content];
     }
 
 }

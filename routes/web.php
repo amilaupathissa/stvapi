@@ -21,3 +21,5 @@ Route::group(['prefix'=>'latest_videos'],function(){
     Route::get('/vimeo/{count?}','Post\PostController@vimeo_videos')->where('count', '[0-9]+');
     Route::get('/{count?}','Post\PostController@latest_videos_count')->where('count', '[0-9]+');
 });
+
+Route::get('video/{id}', 'Post\PostController@singleVideo')->where('id', '[0-9]+');

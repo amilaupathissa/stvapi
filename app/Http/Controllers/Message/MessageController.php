@@ -18,7 +18,7 @@ class MessageController extends Controller
         $subject = $data->subject;
 
         $request->validate([
-            'name' => 'required|max:75|string',
+            'name' => 'required|max:75|min:3|string',
             'email' => 'required|email',
             'subject' => 'required|max:100',
             'text' => 'required'
