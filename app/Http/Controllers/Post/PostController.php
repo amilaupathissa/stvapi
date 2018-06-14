@@ -150,12 +150,18 @@ class PostController extends Controller
     {
         $post = Post::where('ID',$id)->first();
         
-        //get text after 'fusion_text]'
-        $text_after_fusionText = str_after($post->post_content, 'fusion_text]');
+        //get text after '[fusion_text'
+        $text_after_fusionText = str_after($post->post_content, '[fusion_text');
 
-        $content = strip_tags(str_before($text_after_fusionText, '[/fusion_text'));
+        //get content after 'id='
+        $text_after_id = str_after($text_after_fusionText, 'id=');
+        $text_after_simble = str_after($text_after_id, ']');
+
+        $content = strip_tags(str_before($text_after_simble, '[/fusion_text'));
         //remove front and back new lines and spaces
         $finlaContent = trim(preg_replace(' / \s\s + / ', ' ', $content));
+
+        // $finlaContent = $post->post_content;
 
         return $this->returnArray($post, $finlaContent);
     }
