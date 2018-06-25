@@ -212,7 +212,7 @@ class PostController extends Controller
 
     }
 
-        /**
+    /**
      * Get source type of the post
      * 
      * @return String sourcetype
@@ -231,7 +231,5 @@ class PostController extends Controller
             }
         }
     }
-
-
 
 }
