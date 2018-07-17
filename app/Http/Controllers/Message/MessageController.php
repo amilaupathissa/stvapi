@@ -35,17 +35,18 @@ class MessageController extends Controller
         //     'text.required' => 'ඔබගේ පණිවුඩය ඇතුලත් කිරීමට කාරුණික වන්න.'
         // ]
     );
-
-
-        return "ok.. is has been testing";
         
 
-        return Mail::send(['text'=>'email'],['name'=>$name,"subject"=>$subject,'email'=> $email,'text'=> $text],function($message) use ($subject,$name){
+        Mail::send(['text'=>'email'],['name'=>$name,"subject"=>$subject,'email'=> $email,'text'=> $text],function($message) use ($subject,$name){
             $message->to('web.shraddha@gmail.com', 'to backend')
                     ->subject($subject);
             $message->from('mobile.app.shraddha@gmail.com','Message from: '.$name);
         });
-        // return "sent email";
+
+
+        return response('', 200)
+                  ->header('Content-Type', 'text/plain');
+
     }
     
 }
