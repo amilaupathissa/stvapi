@@ -44,7 +44,7 @@ class MessageController extends Controller
         });
 
 
-        return response('', 200)
+        return response(NULL,200)
                   ->header('Content-Type', 'text/plain');
 
     }
